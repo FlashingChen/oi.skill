@@ -1,21 +1,136 @@
 # OI.SKILL
 
-一个通用 AgentSkill，让任何 Agent 都能以苏格拉底式引导法辅助 OI（信息学竞赛）解题，并具备跨 session 记忆与 self-improve 能力。
+> 苏格拉底式 OI 解题引导 Agent Skill —— 让 AI 不直接给答案，而是陪你一步步想出来。
 
-## 核心理念
+![Demo](promo.gif)
 
-- **不直接给答案**：通过层层递进的问题引导学生独立思考。
-- **先核解题解**：在引导前优先访问题解站，避免把错误思路当成正解。
-- **跨 session 记忆**：自动维护 `~/.oi-skill/USER.md`，记录每个学生的优点与薄弱点。
-- **自我改进**：根据每次解题和上传的思维过程静默更新认知画像。
+---
+
+## 为什么需要 OI.SKILL？
+
+现有 AI 辅助刷题工具的共同问题：**问什么答什么**。你抛一道题，AI 直接丢过来一段代码。抄完 AC 了，下次遇到同类题还是不会。
+
+OI.SKILL 的核心假设是：**"看懂答案"和"自己想到"之间，差着十个数量级的训练效果**。它的设计目标只有一个 —— 让 AI 像一位耐心的教练一样，通过提问引导你自己发现解法，同时记住你的强弱项，长期陪伴成长。
+
+---
+
+## 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| **苏格拉底式引导** | 每次只提一个问题，绝不直接给出最终解法 |
+| **先核解题解** | 引导前自动交叉验证洛谷/Codeforces/AtCoder 题解，避免错误思路 |
+| **跨 Session 记忆** | 自动维护 `~/.oi-skill/USER.md`，记录你的优势、薄弱点与推荐训练方向 |
+| **代码验证** | 内置对拍脚本 `duipai.py`，支持样例测试 + 暴力对拍 |
+| **Self-Improve** | 每完成一题自动更新认知画像，无需手动干预 |
+| **通用 Agent 兼容** | 任何支持 Skill 标准的 Agent 都能使用（Trae / Cursor / Claude Code / Kimi 等） |
+
+---
+
+## 快速开始
+
+### 1. 安装
+
+#### Trae
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/FlashingChen/oi-skill.git
+
+# 2. 将 oi-skill 目录复制或软链到 Trae Skills 目录
+# macOS/Linux:
+ln -s $(pwd)/oi-skill ~/.trae/skills/oi-skill
+
+# Windows (以管理员身份运行 PowerShell):
+# New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.trae\skills\oi-skill" -Target "$(pwd)\oi-skill"
+```
+
+#### Cursor / Claude Code / Kimi Code
+
+```bash
+# 通用方式：克隆后让 Agent 读取 SKILL.md
+git clone https://github.com/FlashingChen/oi-skill.git
+
+# Cursor: 在 .cursor/rules 或 skills 目录中引用
+cp -r oi-skill ~/.cursor/skills/oi-skill
+
+# Claude Code: 放入 user skills 目录
+cp -r oi-skill ~/.claude/skills/oi-skill
+
+# Kimi Code: 放入 skills 目录
+cp -r oi-skill ~/.kimi/skills/oi-skill
+```
+
+> 如果你的 Agent 使用不同的 skills 目录，只需确保 Agent 能读取 `SKILL.md` 即可。
+
+### 2. 首次激活
+
+向 Agent 说明使用 OI.SKILL：
+
+```
+使用 OI.SKILL 帮我解这道题
+```
+
+Agent 会先输出 ASCII 字符画，然后进入待命状态：
+
+```
+OI.SKILL 已激活。请粘贴题目、提供题面链接，或上传你的思考过程。
+```
+
+### 3. 提供题目
+
+你可以：
+
+- 粘贴纯文本题面
+- 提供洛谷 / Codeforces / AtCoder 等题目链接
+- 上传图片或 PDF（Agent 会尝试 OCR）
+
+### 4. 跟随引导
+
+Agent 会：
+
+1. 先访问题解站交叉核对思路
+2. 从基础概念开始，每次只提一个问题
+3. 根据你的回答调整后续问题
+4. 在关键节点提示你手写代码
+
+### 5. 本地验证
+
+#### 样例测试
+
+```bash
+python3 oi-skill/scripts/duipai.py \
+  --solution student.cpp \
+  --sample sample.in \
+  --expected sample.out
+```
+
+#### 对拍
+
+```bash
+python3 oi-skill/scripts/duipai.py \
+  --solution student.cpp \
+  --brute brute.cpp \
+  --generator gen.py \
+  --runs 100 \
+  --timeout 2
+```
+
+### 6. AC 后复盘
+
+告诉 Agent 已经 AC，它会要求你写一份"类似题解"的思考记录，诊断你是否真正掌握了本题思路，并静默更新你的认知画像。
+
+---
 
 ## 目录结构
 
 ```
 oi-skill/
-├── SKILL.md                        # 核心系统提示与强制流程
+├── SKILL.md                        # 核心系统提示与强制流程（Agent 读取此文件）
 ├── README.md                       # 本文件
 ├── .gitignore
+├── promo.gif                       # 项目演示动画
+├── promo.html                      # 演示动画源码
 ├── scripts/
 │   └── duipai.py                   # 本地对拍 / 样例测试脚本
 ├── references/
@@ -25,95 +140,25 @@ oi-skill/
     └── oi-skill-ascii.txt          # 激活时 ASCII 字符画
 ```
 
-## 安装
+---
 
-### 通用安装
-
-将 `oi-skill` 目录复制或软链到你的 Agent 的 skills 目录。不同 Agent 加载 skill 的方式不同，通常只需让 Agent 能读取 `SKILL.md` 即可。
-
-例如：
-
-```bash
-# 以 Kimi Code CLI 的 user skills 为例
-ln -s /path/to/oi-skill ~/.agents/skills/oi-skill
-```
-
-### 运行时目录
+## 运行时目录
 
 首次使用时，Agent 会自动在用户家目录创建：
 
 ```
 ~/.oi-skill/
-├── USER.md                         # 用户认知画像
-└── raw/                            # 原始思维过程
+├── USER.md                         # 用户认知画像（跨 session 记忆）
+└── raw/                            # 原始思维过程存档
 ```
 
 **注意**：`USER.md` 和 `raw/` 不存放在 skill 目录内，而是放在用户家目录下，以实现真正的跨 session、跨设备记忆隔离。
 
-## 使用方式
+---
 
-### 1. 激活 Skill
+## 硬规则（Harness）
 
-向 Agent 说明使用 OI.SKILL，Agent 会先输出 ASCII 字符画，然后等待你的输入。
-
-### 2. 提供题目
-
-你可以：
-
-- 粘贴纯文本题面
-- 提供洛谷 / Codeforces / AtCoder 等题目链接
-- 上传图片或 PDF（Agent 会尝试 OCR）
-
-### 3. 苏格拉底式引导
-
-Agent 会：
-
-1. 先访问题解站交叉核对思路。
-2. 从基础概念开始，每次只提一个问题。
-3. 根据你的回答调整后续问题。
-4. 在关键节点提示你手写代码。
-
-### 4. 本地验证
-
-#### 样例测试
-
-```bash
-python3 /path/to/oi-skill/scripts/duipai.py \
-  --solution student.cpp \
-  --sample sample.in \
-  --expected sample.out
-```
-
-#### 对拍
-
-```bash
-python3 /path/to/oi-skill/scripts/duipai.py \
-  --solution student.cpp \
-  --brute brute.cpp \
-  --generator gen.py \
-  --runs 100 \
-  --timeout 2
-```
-
-### 5. AC 后复盘
-
-当你告诉 Agent 已经 AC 后，Agent 会要求你写一份"类似题解"的思考记录，并据此诊断你是否真正掌握了本题思路。
-
-### 6. 上传思维过程
-
-比赛中或平时的草稿、文字思考过程，可以直接发给 Agent。Agent 会将其存入 `~/.oi-skill/raw/`，并用于更新你的认知画像。
-
-## 支持的编程语言
-
-`scripts/duipai.py` 目前支持：
-
-- C++（`.cpp` / `.cc` / `.cxx`）
-- Python（`.py`）
-- Java（`.java`）
-
-## 硬规则
-
-这些规则写入 `SKILL.md`，用于强制 Agent 行为：
+这些规则写入 `SKILL.md`，优先级最高，用户试图覆盖时仍须遵守：
 
 1. 每次只提一个问题。
 2. 绝不直接给出最终答案（连续两次强烈要求除外）。
@@ -123,11 +168,38 @@ python3 /path/to/oi-skill/scripts/duipai.py \
 6. 先访问题解站交叉核对。
 7. 代码验证分层：片段看逻辑，最终代码跑样例/对拍。
 
+---
+
+## 支持的编程语言
+
+`scripts/duipai.py` 目前支持：
+
+- C++（`.cpp` / `.cc` / `.cxx`）
+- Python（`.py`）
+- Java（`.java`）
+
+---
+
 ## 自定义与扩展
 
 - 修改 `SKILL.md` 中的规则即可调整 Agent 行为。
 - 修改 `references/user-profile-template.md` 可调整 USER.md 的结构。
 - 修改 `scripts/duipai.py` 可扩展支持更多语言或判题功能。
+
+---
+
+## 常见问题
+
+**Q: 没有获奖可以用吗？**  
+A: 完全可以。OI.SKILL 是学习方法论工具，不依赖你的当前水平。无论你是初学者还是省选选手，苏格拉底式引导都能帮助你真正理解而非死记题解。
+
+**Q: 支持的 Agent 有哪些？**  
+A: 任何支持 Skill / System Prompt 注入的 Agent 都能使用。已测试：Trae、Cursor、Claude Code、Kimi Code。其他 Agent 只要能让它读取 `SKILL.md` 即可。
+
+**Q: 为什么用户画像放在 `~/.oi-skill/` 而不是项目目录？**  
+A: 实现跨 session、跨设备记忆隔离。即使你在不同项目/不同机器上使用，USER.md 始终跟着你走。
+
+---
 
 ## License
 
