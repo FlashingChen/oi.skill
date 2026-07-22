@@ -2,6 +2,11 @@
 
 > 苏格拉底式 OI 解题引导 Agent Skill —— 让 AI 不直接给答案，而是陪你一步步想出来。
 
+[![License](https://img.shields.io/badge/license-MIT-orange)](./LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/FlashingChen/oi.skill)](https://github.com/FlashingChen/oi.skill/stargazers)
+[![GitHub last commit](https://img.shields.io/github/last-commit/FlashingChen/oi.skill)](https://github.com/FlashingChen/oi.skill/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/FlashingChen/oi.skill)](https://github.com/FlashingChen/oi.skill/issues)
+
 ![Demo](promo.gif)
 
 ---
