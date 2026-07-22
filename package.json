@@ -1,0 +1,45 @@
+{
+  "name": "oi-skill",
+  "version": "0.1.0",
+  "description": "苏格拉底式 OI 解题引导 Agent Skill —— 一键安装到任何 Agent",
+  "main": "index.js",
+  "bin": {
+    "oi-skill": "./bin/oi-skill.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "oi",
+    "competitive-programming",
+    "algorithm",
+    "agent-skill",
+    "socratic",
+    "tutoring",
+    "trae",
+    "cursor",
+    "claude-code"
+  ],
+  "author": "FlashingChen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlashingChen/oi.skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FlashingChen/oi.skill/issues"
+  },
+  "homepage": "https://github.com/FlashingChen/oi.skill#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "SKILL.md",
+    "scripts/",
+    "references/",
+    "assets/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ]
+}
