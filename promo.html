@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>OI.SKILL Promo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0A0A0A;
+    overflow: hidden;
+    width: 1920px;
+    height: 1080px;
+  }
+  #canvas {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: #0A0A0A;
+    font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", monospace;
+    overflow: hidden;
+  }
+
+  /* Scene 1: Title */
+  .scene-title {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .title-main {
+    font-size: 120px;
+    font-weight: 700;
+    color: #E8E8E8;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+  .title-accent {
+    color: #FF6B35;
+  }
+  .title-sub {
+    margin-top: 24px;
+    font-size: 32px;
+    color: #888888;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+  .title-line {
+    margin-top: 32px;
+    width: 0px;
+    height: 2px;
+    background: #FF6B35;
+  }
+
+  /* Scene 2: Terminal Dialog */
+  .scene-terminal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .terminal-window {
+    width: 960px;
+    background: #141414;
+    border: 1px solid #2A2A2A;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  }
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background: #1A1A1A;
+    border-bottom: 1px solid #2A2A2A;
+  }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #FF5F57; }
+  .term-dot.y { background: #FEBC2E; }
+  .term-dot.g { background: #28C840; }
+  .term-title {
+    margin-left: 12px;
+    font-size: 14px;
+    color: #666;
+  }
+  .terminal-body {
+    padding: 32px 36px;
+    font-size: 22px;
+    line-height: 1.8;
+    color: #B0B0B0;
+    min-height: 280px;
+  }
+  .term-prompt {
+    color: #4ADE80;
+    font-weight: 600;
+  }
+  .term-user { color: #60A5FA; }
+  .term-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 22px;
+    background: #FF6B35;
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .term-hint {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(255,107,53,0.08);
+    border-left: 3px solid #FF6B35;
+    border-radius: 0 6px 6px 0;
+    font-size: 18px;
+    color: #FF6B35;
+  }
+
+  /* Scene 3: Feature Cards */
+  .scene-features {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .features-label {
+    font-size: 18px;
+    color: #555;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+  .cards-row {
+    display: flex;
+    gap: 32px;
+  }
+  .feature-card {
+    width: 340px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 36px 28px;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  .card-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #E8E8E8;
+    margin-bottom: 12px;
+  }
+  .card-desc {
+    font-size: 16px;
+    color: #777;
+    line-height: 1.6;
+  }
+
+  /* Scene 4: CTA */
+  .scene-cta {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .cta-title {
+    font-size: 56px;
+    font-weight: 700;
+    color: #E8E8E8;
+    margin-bottom: 16px;
+  }
+  .cta-repo {
+    font-size: 24px;
+    color: #888;
+    font-family: monospace;
+    margin-bottom: 40px;
+  }
+  .cta-actions {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .cta-btn {
+    padding: 16px 40px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cta-btn.primary {
+    background: #FF6B35;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(255,107,53,0.3);
+  }
+  .cta-btn.secondary {
+    background: #1A1A1A;
+    color: #E8E8E8;
+    border: 1px solid #333;
+  }
+  .cta-star {
+    font-size: 72px;
+    color: #FF6B35;
+    margin-bottom: 24px;
+  }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 0.15em;
+    font-family: monospace;
+    pointer-events: none;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+<div id="canvas">
+  <!-- Scene 1: Title -->
+  <div class="scene-title" id="s1">
+    <div class="title-main" id="s1-title">
+      <span class="title-accent">OI</span>.SKILL
+    </div>
+    <div class="title-sub" id="s1-sub">苏格拉底式 OI 解题引导</div>
+    <div class="title-line" id="s1-line"></div>
+  </div>
+
+  <!-- Scene 2: Terminal -->
+  <div class="scene-terminal" id="s2" style="opacity:0; pointer-events:none;">
+    <div class="terminal-window" id="s2-window">
+      <div class="terminal-header">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <div class="term-title">oi-skill-session</div>
+      </div>
+      <div class="terminal-body">
+        <div id="s2-line1"></div>
+        <div id="s2-line2" style="margin-top:16px;"></div>
+        <div class="term-hint" id="s2-hint" style="opacity:0;">
+          每次只提一个问题，绝不直接给答案
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 3: Features -->
+  <div class="scene-features" id="s3" style="opacity:0; pointer-events:none;">
+    <div class="features-label" id="s3-label">核心能力</div>
+    <div class="cards-row">
+      <div class="feature-card" id="s3-c1">
+        <div class="card-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg></div>
+        <div class="card-title">先核解题解</div>
+        <div class="card-desc">引导前交叉验证题解站<br>避免错误思路误导</div>
+      </div>
+      <div class="feature-card" id="s3-c2">
+        <div class="card-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="6" cy="12" r="2"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/></svg></div>
+        <div class="card-title">跨 Session 记忆</div>
+        <div class="card-desc">自动维护 USER.md<br>记录你的优势与薄弱点</div>
+      </div>
+      <div class="feature-card" id="s3-c3">
+        <div class="card-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 14 15 20 9"/><path d="M14 15l-2-2-1 1"/></svg></div>
+        <div class="card-title">代码验证</div>
+        <div class="card-desc">本地对拍脚本<br>样例测试 + 压力验证</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 4: CTA -->
+  <div class="scene-cta" id="s4" style="opacity:0; pointer-events:none;">
+    <div class="cta-star" id="s4-star"><svg width="72" height="72" viewBox="0 0 24 24" fill="#FF6B35" stroke="#FF6B35" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+    <div class="cta-title" id="s4-title">让任何 Agent 都能辅导 OI</div>
+    <div class="cta-repo" id="s4-repo">github.com/yourname/oi-skill</div>
+    <div class="cta-actions" id="s4-actions">
+      <div class="cta-btn primary"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Star</div>
+      <div class="cta-btn secondary"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8E8E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="6" cy="18" r="3"/><circle cx="6" cy="3" r="3"/><circle cx="18" cy="9" r="3"/><line x1="6" y1="15" x2="18" y2="9"/><line x1="6" y1="3" x2="18" y2="9"/></svg></span> Fork</div>
+      <div class="cta-btn secondary"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8E8E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> Start</div>
+    </div>
+  </div>
+
+  <div class="watermark">Created by Huashu-Design</div>
+</div>
+
+<script>
+// ===== Easing & Utils =====
+function expoOut(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
+function easeOut(t) { return 1 - (1-t)*(1-t); }
+function lerp(a, b, t) { return a + (b-a)*t; }
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function typewriter(el, text, startT, endT, globalT) {
+  if (globalT < startT) { el.textContent = ''; return; }
+  const progress = clamp((globalT - startT) / (endT - startT), 0, 1);
+  const idx = Math.floor(progress * text.length);
+  const hasCursor = globalT < endT;
+  el.innerHTML = text.slice(0, idx) + (hasCursor ? '<span class="term-cursor"></span>' : '');
+}
+
+// ===== Animation State =====
+const DURATION = 18;
+let time = 0;
+let playing = false;
+let lastTick = null;
+const fired = new Set();
+
+// ===== Scene Renderers =====
+function render(t) {
+  // Scene 1: Title (0 - 3.5s)
+  const s1 = document.getElementById('s1');
+  const s1Title = document.getElementById('s1-title');
+  const s1Sub = document.getElementById('s1-sub');
+  const s1Line = document.getElementById('s1-line');
+
+  if (t < 3.5) {
+    s1.style.opacity = 1;
+    s1.style.display = '';
+    const inT = clamp(t / 1.2, 0, 1);
+    const titleScale = lerp(0.85, 1, expoOut(inT));
+    const titleOp = lerp(0, 1, expoOut(inT));
+    s1Title.style.transform = `scale(${titleScale})`;
+    s1Title.style.opacity = titleOp;
+
+    const subIn = clamp((t - 0.6) / 1.0, 0, 1);
+    s1Sub.style.opacity = lerp(0, 1, easeOut(subIn));
+    s1Sub.style.transform = `translateY(${lerp(20, 0, easeOut(subIn))}px)`;
+
+    const lineIn = clamp((t - 1.2) / 0.8, 0, 1);
+    s1Line.style.width = `${lerp(0, 120, expoOut(lineIn))}px`;
+
+    // Exit
+    const exitT = clamp((t - 2.8) / 0.7, 0, 1);
+    s1.style.opacity = lerp(1, 0, easeInOut(exitT));
+    s1.style.transform = `translateY(${lerp(0, -40, easeInOut(exitT))}px)`;
+  } else {
+    s1.style.opacity = 0;
+    s1.style.pointerEvents = 'none';
+  }
+
+  // Scene 2: Terminal Dialog (3.0 - 8.0s)
+  const s2 = document.getElementById('s2');
+  const s2Window = document.getElementById('s2-window');
+  const s2Line1 = document.getElementById('s2-line1');
+  const s2Line2 = document.getElementById('s2-line2');
+  const s2Hint = document.getElementById('s2-hint');
+
+  if (t >= 2.5 && t < 8.5) {
+    s2.style.opacity = 1;
+    s2.style.display = '';
+    s2.style.pointerEvents = '';
+
+    const enterT = clamp((t - 2.5) / 0.7, 0, 1);
+    const winY = lerp(60, 0, expoOut(enterT));
+    const winOp = lerp(0, 1, expoOut(enterT));
+    s2Window.style.transform = `translateY(${winY}px)`;
+    s2Window.style.opacity = winOp;
+
+    // Typewriter lines
+    typewriter(s2Line1, '> 学生:  这题怎么做？', 3.4, 4.6, t);
+    if (t >= 4.0) {
+      const l2Text = '> OI.SKILL:  先告诉我，你觉得哪个条件最关键？';
+      typewriter(s2Line2, l2Text, 4.8, 6.8, t);
+    } else {
+      s2Line2.innerHTML = '';
+    }
+
+    const hintIn = clamp((t - 7.0) / 0.6, 0, 1);
+    s2Hint.style.opacity = lerp(0, 1, easeOut(hintIn));
+    s2Hint.style.transform = `translateX(${lerp(-20, 0, easeOut(hintIn))}px)`;
+
+    const exitT = clamp((t - 7.8) / 0.7, 0, 1);
+    s2.style.opacity = lerp(1, 0, easeInOut(exitT));
+    s2.style.transform = `translateY(${lerp(0, -30, easeInOut(exitT))}px)`;
+  } else {
+    s2.style.opacity = 0;
+    s2.style.pointerEvents = 'none';
+  }
+
+  // Scene 3: Features (8.0 - 13.0s)
+  const s3 = document.getElementById('s3');
+  const s3Label = document.getElementById('s3-label');
+  const c1 = document.getElementById('s3-c1');
+  const c2 = document.getElementById('s3-c2');
+  const c3 = document.getElementById('s3-c3');
+
+  if (t >= 7.5 && t < 13.5) {
+    s3.style.opacity = 1;
+    s3.style.display = '';
+    s3.style.pointerEvents = '';
+
+    const enterT = clamp((t - 7.5) / 0.6, 0, 1);
+    s3.style.opacity = lerp(0, 1, easeOut(enterT));
+
+    const labelIn = clamp((t - 8.0) / 0.5, 0, 1);
+    s3Label.style.opacity = lerp(0, 1, easeOut(labelIn));
+
+    [c1, c2, c3].forEach((card, i) => {
+      const cardIn = clamp((t - 8.3 - i*0.25) / 0.7, 0, 1);
+      const y = lerp(50, 0, expoOut(cardIn));
+      const op = lerp(0, 1, expoOut(cardIn));
+      card.style.transform = `translateY(${y}px)`;
+      card.style.opacity = op;
+    });
+
+    const exitT = clamp((t - 12.5) / 0.8, 0, 1);
+    s3.style.opacity = lerp(1, 0, easeInOut(exitT));
+    s3.style.transform = `translateY(${lerp(0, -20, easeInOut(exitT))}px)`;
+  } else {
+    s3.style.opacity = 0;
+    s3.style.pointerEvents = 'none';
+  }
+
+  // Scene 4: CTA (13.0 - 18.0s)
+  const s4 = document.getElementById('s4');
+  const s4Star = document.getElementById('s4-star');
+  const s4Title = document.getElementById('s4-title');
+  const s4Repo = document.getElementById('s4-repo');
+  const s4Actions = document.getElementById('s4-actions');
+
+  if (t >= 12.5) {
+    s4.style.opacity = 1;
+    s4.style.display = '';
+    s4.style.pointerEvents = '';
+
+    const enterT = clamp((t - 12.5) / 0.8, 0, 1);
+    s4.style.opacity = lerp(0, 1, easeOut(enterT));
+
+    const starIn = clamp((t - 13.0) / 0.6, 0, 1);
+    const starScale = lerp(0.5, 1, expoOut(starIn));
+    s4Star.style.transform = `scale(${starScale})`;
+    s4Star.style.opacity = lerp(0, 1, expoOut(starIn));
+
+    const titleIn = clamp((t - 13.3) / 0.7, 0, 1);
+    s4Title.style.opacity = lerp(0, 1, expoOut(titleIn));
+    s4Title.style.transform = `translateY(${lerp(20, 0, expoOut(titleIn))}px)`;
+
+    const repoIn = clamp((t - 13.8) / 0.5, 0, 1);
+    s4Repo.style.opacity = lerp(0, 1, easeOut(repoIn));
+
+    const actIn = clamp((t - 14.2) / 0.6, 0, 1);
+    s4Actions.style.opacity = lerp(0, 1, easeOut(actIn));
+    s4Actions.style.transform = `translateY(${lerp(15, 0, easeOut(actIn))}px)`;
+
+    // Hold until end, no fade out for loop seamlessness
+  } else {
+    s4.style.opacity = 0;
+    s4.style.pointerEvents = 'none';
+  }
+}
+
+// ===== Tick Loop (starter template) =====
+function tick(now) {
+  if (lastTick === null) {
+    lastTick = now;
+    window.__ready = true;
+    render(0);
+    requestAnimationFrame(tick);
+    return;
+  }
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+
+  if (playing) {
+    let t = time + dt;
+    if (t >= DURATION) {
+      t = window.__recording ? DURATION - 0.001 : 0;
+      if (!window.__recording) fired.clear();
+    }
+    time = t;
+    render(time);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ===== Seek Interface =====
+window.__seek = (t) => { fired.clear(); time = t; lastTick = null; render(t); };
+
+// ===== Boot =====
+document.fonts.ready.then(() => {
+  render(0);
+  playing = true;
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>

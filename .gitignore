@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime user data (should never be committed)
+~/.oi-skill/
+
+# Promo build artifacts
+promo.mp4
+promo-60fps.mp4
+promo-final.mp4
+promo-frame*.png
+promo-t*.png
+promo-svg-check.png
+verify-promo.mjs
